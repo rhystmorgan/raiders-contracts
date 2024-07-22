@@ -27,7 +27,7 @@ type RaidAction {
 }
 
 type MintAction {
-  AMint
+  AMint { q: Int, v: Int }
   ABurn
 }
 
@@ -61,7 +61,7 @@ validator(o: VerificationKeyHash, rp: value.PolicyId) {
         |> dict.to_pairs()
 
     when r is {
-      AMint -> {
+      AMint { q, v } -> {
         expect Some(ref) =
           l.find(
             c.transaction.reference_inputs,
@@ -81,7 +81,10 @@ validator(o: VerificationKeyHash, rp: value.PolicyId) {
 
             output.address.payment_credential == cr.ScriptCredential(raidVal) && value.lovelace_of(
               output.value,
-            ) >= ( dat.q * dat.v + 2 ) * 1000000
+            ) >= ( dat.q * dat.v + 2 ) * 1000000 && dat.q == q && dat.v == v && l.has(
+              c.transaction.extra_signatories,
+              dat.c,
+            )
           },
         )
       }
@@ -179,8 +182,6 @@ validator(o: VerificationKeyHash, p: value.PolicyId) {
 
     when r is {
       RUpdate { v, i } -> {
-        let scriptHash = ok.get_own_script_hash(c)
-
         let out = ok.get_own_singleton_output(c)
         expect t.InlineDatum(datum) = out.datum
         expect outD: RefDatum = datum
