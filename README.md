@@ -3,7 +3,28 @@
 Raiders Contracts will allow anyone to create bounties for community members to earn 
 rewards for taking specific actions.
 
+> NOTE - This set of validators limits one user IO currently, however it is designed with
+> it is designed with future updates in mind, however, so you will be able to do the w0
+> optimisation to increase this throughput limitation, or to add new features to the
+> validators without affecting pre-existing user bounties
+
 ---
+
+## How To Use These Validators
+
+To use these you will need to complete the setup transaction to mint your `RefToken` 
+first, with the following Datum:
+
+```rust
+RefDatum {
+  v: [raidValHash], // parameterised scriptHash of raidVal
+  i: [0n] // 0 fee list, unused currently but available for future changes
+} 
+```
+
+Once you have your refToken it will need to be added as a reference input to each 
+transaction that mints a Bounty as it will control the RaidToken output ( to make sure 
+it is sent to the validator ).
 
 ## Validator Descriptions
 
